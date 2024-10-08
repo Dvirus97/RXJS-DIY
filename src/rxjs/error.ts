@@ -5,9 +5,9 @@ export class ObservableError extends Error {
 }
 
 export function throwObservableError(err: any): void {
-  try {
-    throw new ObservableError(err);
-  } catch (err) {
-    console.error(err);
-  }
+  // try {
+  throw new ObservableError(err);
+  // } catch (err) {
+  // console.error(err);
+  // }
 }

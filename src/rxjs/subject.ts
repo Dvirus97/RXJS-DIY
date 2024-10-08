@@ -12,7 +12,6 @@ export class Subject<T> extends Observable<T> {
     super();
   }
   override subscribe(observer: Partial<Observer<T>> | NextFn<T>): Subscription {
-    const subscription = new Subscription();
     let obs: Observer<T>;
     if (typeof observer == "function") {
       obs = {
@@ -27,6 +26,7 @@ export class Subject<T> extends Observable<T> {
         complete: observer.complete ?? (() => {}),
       };
     }
+    const subscription = new Subscription();
     const subscriber = new Subscriber<T>(obs, subscription);
     this.observers.push(subscriber);
     const res = this.observerFn?.(subscriber);
@@ -42,5 +42,28 @@ export class Subject<T> extends Observable<T> {
   }
   complete() {
     this.observers.forEach((x) => x.complete());
+  }
+}
+
+export class BehaviorSubject<T> extends Subject<T> {
+  constructor(private initVal: T) {
+    super();
+  }
+  get value() {
+    return this.initVal;
+  }
+
+  override subscribe(observer: Partial<Observer<T>> | NextFn<T>): Subscription {
+    if (typeof observer == "function") {
+      observer(this.value);
+    } else {
+      observer.next?.(this.value);
+    }
+    return super.subscribe(observer);
+  }
+
+  override next(value: T) {
+    this.initVal = value;
+    super.next(value);
   }
 }

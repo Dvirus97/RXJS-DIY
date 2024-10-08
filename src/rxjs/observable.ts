@@ -28,6 +28,7 @@ export class Observable<T> {
     return subscription;
   }
 
+  //#region
   pipe(): Observable<T>;
   pipe<A>(op1: UnaryFunction<Observable<T>, A>): A;
   pipe<A, B>(op1: UnaryFunction<Observable<T>, A>, op2: UnaryFunction<A, B>): B;
@@ -95,7 +96,7 @@ export class Observable<T> {
     op9: UnaryFunction<H, I>,
     ...operations: UnaryFunction<any, any>[]
   ): Observable<unknown>;
-
+  //#endregion
   pipe(...fns: Array<UnaryFunction<any, any>>): unknown {
     return fns.reduce((source, fn) => fn(source), this as Observable<T>);
   }

@@ -2,7 +2,7 @@ import { Subscription } from "./subscription";
 import { Observer } from "../rxjs/types";
 
 export class Subscriber<T> implements Observer<T> {
-  public _closed = false;
+  private _closed = false;
   constructor(private observer: Observer<T>, private subscription: Subscription) {
     this.subscription.add(() => (this._closed = true));
   }
