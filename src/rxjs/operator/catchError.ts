@@ -10,7 +10,6 @@ export function catchError<T, R>(fn: (err: any) => Observable<R>): OperatorFunct
       try {
         sub = source.subscribe({
           next(value: any) {
-            console.log("a");
             observer.next(value);
           },
           error(err) {

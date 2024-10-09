@@ -6,7 +6,6 @@ export function throwError<T, R>(fn: (value: T) => R): OperatorFunction<T, R> {
     return new Observable<R>((observer) => {
       const sub = source.subscribe({
         next(val) {
-          console.log("a");
           observer.error(fn(val));
         },
         error(err) {
