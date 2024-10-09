@@ -1,30 +1,42 @@
 import { Observable } from "../observable";
-import { OperatorFunction } from "../types";
+import { Subscription } from "../subscription";
+import { Dispose, OperatorFunction } from "../types";
 
-export function catchError<T>(): OperatorFunction<T, T> {
+export function catchError<T, R>(fn: (err: any) => Observable<R>): OperatorFunction<T, R> {
   return (source) => {
-    return new Observable<T>((observer) => {
+    return new Observable<R>((observer): Dispose => {
+      let sub: Subscription;
+      let inner: Subscription;
       try {
-        const sub = source.subscribe({
-          next(value) {
+        sub = source.subscribe({
+          next(value: any) {
+            console.log("a");
             observer.next(value);
           },
           error(err) {
-            console.log("Error: " + err);
             observer.next(err);
           },
           complete() {
             observer.complete();
           },
         });
-        return () => {
-          sub.unsubscribe();
-        };
       } catch (error: any) {
-        return new Observable<T>((observer) => {
-          console.log("aaa");
-          observer.next(error.message);
+        inner = fn(error).subscribe({
+          next(value: any) {
+            observer.next(value.message);
+          },
+          error(err) {
+            observer.next(err.message);
+          },
+          complete() {
+            observer.complete();
+          },
         });
+      } finally {
+        return () => {
+          inner?.unsubscribe();
+          sub?.unsubscribe();
+        };
       }
     });
   };
